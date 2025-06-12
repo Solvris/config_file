@@ -30,14 +30,6 @@ alias cls='clear'             # Clear the terminal screen
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
                                 # Notification for long-running commands
 
-# Set the prompt
-if [ "$EUID" -eq 0 ]
-  then PS1="\[\033[0m\]\[\033[35m\][\A]\[\033[31m\]\u\[\033[33m\]@\h\[\033[34m\]:\w \[\033[31m\]# \[\033[0m\]"
-else
-  # Regular user settings
-  PS1="\[\033[0m\]\[\033[35m\][\A]\[\033[32m\]\u\[\033[33m\]@\h\[\033[34m\]:\w \[\033[32m\]\\\$ \[\033[0m\]"
-fi
-
 # Set terminal title if supported
 case "$TERM" in
 xterm*|rxvt*)
@@ -45,6 +37,13 @@ xterm*|rxvt*)
     ;;
 esac
 
+if [ -t 1 ] && [ $(tput colors 2>/dev/null) -ge 8 ]; then
+    if [ "$EUID" -eq 0 ]; then
+        PS1='\[\033[0m\]\[\033[35m\][\A]\[\033[31m\]\u\[\033[33m\]@\h\[\033[34m\]:\w \[\033[31m\]# \[\033[0m\]'
+    else
+        PS1='\[\033[0m\]\[\033[35m\][\A]\[\033[32m\]\u\[\033[33m\]@\h\[\033[34m\]:\w \[\033[32m\]\$ \[\033[0m\]'
+    fi
+fi
 # Load custom aliases file if it exists
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
